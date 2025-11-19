@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import userRouter from './src/routes/userRouter.js';
 import cookieParser from 'cookie-parser';
+import categoryRouter from './src/routes/categoryRouter.js';
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.get('/', (req, res) => {
     res.send('Welcome to Moco Mart API');
 })
 app.use('/api/auth/user', userRouter)
+app.use('/api/admin/categories', categoryRouter)
 
 
 export default app;

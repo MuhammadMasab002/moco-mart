@@ -10,12 +10,12 @@ const registerUser = async (req, res) => {
 
         const { username, email, password } = req.body;
         if (!username || !email || !password) {
-            return res.status(400).json({ message: "All fields are required!" });
+            return res.status(400).json({ success: false, message: "All fields are required!" });
         }
 
         const checkUserExist = await User.findOne({ email });
         if (checkUserExist) {
-            return res.status(409).json({ message: "User already exist!!" });
+            return res.status(409).json({ success: false, message: "User already exist!!" });
         }
 
         // Hash the password before saving 
@@ -36,12 +36,13 @@ const registerUser = async (req, res) => {
         };
 
         return res.status(201).json({
+            success: true,
             message: "User registered successfully!",
             user: userResponse,
         });
 
     } catch (error) {
-        return res.status(500).json({ message: "Server error", error: error.message });
+        return res.status(500).json({ success: false, message: "Server error", error: error.message });
     }
 
 };
@@ -50,15 +51,15 @@ const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
         if (!email || !password) {
-            return res.status(400).json({ message: "All fields are required!" });
+            return res.status(400).json({ success: false, message: "All fields are required!" });
         }
         const existingUser = await User.findOne({ email })
         if (!existingUser) {
-            return res.status(404).json({ message: "User not found!" });
+            return res.status(404).json({ success: false, message: "User not found!" });
         }
         const isPasswordValid = await bcrypt.compare(password, existingUser.password)
         if (!isPasswordValid) {
-            return res.status(401).json({ message: "Invalid credentials!" });
+            return res.status(401).json({ success: false, message: "Invalid credentials!" });
         }
 
         const token = jwt.sign({
@@ -83,11 +84,12 @@ const loginUser = async (req, res) => {
         return res.status(200)
             .cookie("token", token, options)
             .json({
+                success: true,
                 message: "Login successful!",
                 user: userResponse,
             });
     } catch (error) {
-        return res.status(500).json({ message: "Server error", error: error.message });
+        return res.status(500).json({ success: false, message: "Server error", error: error.message });
     }
 }
 
