@@ -54,6 +54,7 @@ const registerUser = async (req, res) => {
       username,
       email,
       password: hashPassword,
+      role: "user"
     });
     await newUser.save();
 
@@ -61,6 +62,7 @@ const registerUser = async (req, res) => {
       _id: newUser._id,
       username: newUser.username,
       email: newUser.email,
+      role: newUser.role
     };
 
     return res.status(201).json({
@@ -112,6 +114,7 @@ const loginUser = async (req, res) => {
       username: existingUser.username,
       email: existingUser.email,
       accessToken,
+      role: existingUser.role
     };
     const options = {
       httpOnly: true,
@@ -133,4 +136,32 @@ const loginUser = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser };
+const logoutUser = async (req, res) => {
+  try {
+    await User.findByIdAndUpdate(
+      req.user._id,
+      {
+        $unset: { refreshToken: 1 },
+      },
+      {
+        new: true,
+      }
+    );
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
+
+    return res
+      .status(200)
+      .clearCookie("accessToken", options)
+      .clearCookie("refreshToken", options)
+      .json({ success: true, message: "User logged Out", data: {} });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ success: false, message: "Server error", error: error.message });
+  }
+};
+
+export { registerUser, loginUser, logoutUser };

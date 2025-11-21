@@ -14,7 +14,7 @@ export const createDefaultAdmin = async () => {
       username: "admin",
       email: process.env.ADMIN_EMAIL,
       password: hashedPassword,
-      role: "admin",
+      role: "admin"
     });
     if (!defaultAdmin) {
       console.log("Failed to create default admin");

@@ -12,7 +12,7 @@ import { verifyAdmin } from "../middlewares/admin.middleware.js";
 const productRouter = Router();
 
 // Define product routes here
-productRouter.get("/", verifyJWT, verifyAdmin, getAllProducts);
+productRouter.get("/", getAllProducts);
 productRouter.get("/:id", singleProduct);
 
 productRouter.post("/", verifyJWT, verifyAdmin, createProduct);
